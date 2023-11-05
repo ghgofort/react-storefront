@@ -11,7 +11,7 @@
     "overridesDir": "overrides"
   },
   "devDependencies": {
-    "@salesforce/retail-react-app": "2.0.0"
+    "@salesforce/retail-react-app": "2.1.0"
   },
   "scripts": {
     "analyze-build": "cross-env MOBIFY_ANALYZE=true npm run build",
