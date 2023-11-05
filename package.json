@@ -1,32 +1,52 @@
 {
-  "name": "pwa-kit",
-  "version": "3.0.0-dev",
-  "scripts": {
-    "bump-version": "node ./scripts/bump-version/index.js",
-    "bump-version:retail-react-app": "node ./scripts/bump-version/index.js --package=@salesforce/retail-react-app",
-    "bump-version:commerce-sdk-react": "node ./scripts/bump-version/index.js --package=@salesforce/commerce-sdk-react",
-    "publish-to-npm": "node ./scripts/publish-to-npm.js",
-    "format": "lerna run --stream format",
-    "preinstall": "node ./scripts/check-version.js",
-    "postinstall": "node ./scripts/bootstrap.js",
-    "lerna": "lerna",
-    "lint": "lerna run --stream lint",
-    "lint:fix": "lerna run lint:fix",
-    "pretest": "npm run lint",
-    "test": "lerna run --stream --concurrency=1 test",
-    "test:max-file-size": "lerna run --stream test:max-file-size",
-    "check-dep-version": "syncpack list-mismatches"
+  "name": "demo-storefront",
+  "version": "0.0.1",
+  "license": "See license in LICENSE",
+  "engines": {
+    "node": "^16.0.0 || ^18.0.0",
+    "npm": "^7.0.0 || ^8.0.0 || ^9.0.0"
+  },
+  "ccExtensibility": {
+    "extends": "@salesforce/retail-react-app",
+    "overridesDir": "overrides"
   },
   "devDependencies": {
-    "commander": "^9.5.0",
-    "eslint-plugin-header": "^3.1.1",
-    "lerna": "^6.6.1",
-    "semver": "^7.3.8",
-    "shelljs": "^0.8.5",
-    "syncpack": "^10.1.0"
+    "@salesforce/retail-react-app": "2.1.0"
   },
-  "engines": {
-    "node": "^16.11.0 || ^18.0.0",
-    "npm": "^8.0.0 || ^9.0.0"
-  }
+  "scripts": {
+    "analyze-build": "cross-env MOBIFY_ANALYZE=true npm run build",
+    "build": "npm run build-translations && pwa-kit-dev build",
+    "build-translations": "npm run extract-default-translations && npm run compile-translations",
+    "compile-translations": "node ./node_modules/@salesforce/retail-react-app/scripts/translations/compile-folder.js translations",
+    "compile-translations:pseudo": "node ./node_modules/@salesforce/retail-react-app/scripts/translations/compile-pseudo.js translations/en-US.json",
+    "extract-default-translations": "node ./node_modules/@salesforce/retail-react-app/scripts/translations/extract-default-messages.js en-US",
+    "format": "pwa-kit-dev format \"**/*.{js,jsx}\"",
+    "lint": "pwa-kit-dev lint \"**/*.{js,jsx}\"",
+    "lint:fix": "npm run lint -- --fix",
+    "postinstall": "npm run compile-translations && npm run compile-translations:pseudo",
+    "push": "npm run build && pwa-kit-dev push",
+    "save-credentials": "pwa-kit-dev save-credentials",
+    "start": "cross-env NODE_ICU_DATA=node_modules/full-icu pwa-kit-dev start",
+    "start:inspect": "npm run start -- --inspect",
+    "start:pseudolocale": "npm run extract-default-translations && npm run compile-translations:pseudo && cross-env USE_PSEUDOLOCALE=true npm run start",
+    "tail-logs": "pwa-kit-dev tail-logs",
+    "test": "pwa-kit-dev test",
+    "test:lighthouse": "cross-env NODE_ENV=production lhci autorun --config=tests/lighthouserc.js",
+    "test:max-file-size": "npm run build && bundlesize"
+  },
+  "bundlesize": [
+    {
+      "path": "build/main.js",
+      "maxSize": "42 kB"
+    },
+    {
+      "path": "build/vendor.js",
+      "maxSize": "320 kB"
+    }
+  ],
+  "browserslist": [
+    "iOS >= 9.0",
+    "Android >= 4.4.4",
+    "last 4 ChromeAndroid versions"
+  ]
 }
